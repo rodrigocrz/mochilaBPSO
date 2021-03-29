@@ -163,7 +163,7 @@ if __name__ == "__main__":
         # Para cada partícula
         for j, elem in enumerate(arr):
             # Si el fitnes de Pj es mejor que el de Pg, almacena en g, el índice j
-            if fitness(pArr[j]) > fitness(pArr[g]):
+            if fitness(arr, pArr[j]) > fitness(arr, pArr[g]):
                 g = j
         # Números aleatoriamente distribuidos entre 0 y 1 y redondeados a dos decimales
         r1 = round(random.uniform(0, 1), 2)
