@@ -1,5 +1,6 @@
 import random
 import os
+import math
 # import msvcrt
 
 # Prints all the articles that can be inside the backpack
@@ -78,7 +79,7 @@ def matBinAleat(orden):
     for i in range (0, orden):
         for j in range (0, orden):
             matriz[i][j] = random.randint(0, 1)
-    print(matriz)
+    return matriz
 
 # Genera una matriz cuadrada (según el orden) con valores reales en un
 # rango de [-4, 4]
@@ -87,11 +88,29 @@ def matRealAleat(orden):
     for i in range (0, orden):
         for j in range (0, orden):
             matriz[i][j] = round(random.uniform(-4, 4), 2)
-    print(matriz)
+    return matriz
+
+
 # Obtiene la imagen de la función sigmoide evaluada en un punto 
 # específico
 def sigmodie(vid):
     return 1 / 1 + math.exp(-vid)
+
+# Sumatoria del producto de la ganancia de cada item del mapa arr por el elemento 
+# correspondiente a la partícula de X o P
+#       prtc es la partícula  de X o P
+def fitness(arr, prtc):
+    suma = 0
+    for idx, selec in enumerate(prtc): # selec es un número binario de la partícula
+        suma += selec * arr[idx]['profit']
+    #     print (''' 
+    #         Selec: {}
+    #         Profit: {}
+    #         Yes? {}
+    #     '''.format(selec, arr[idx]['profit'], 'yes' if selec == 1 else 'no'))
+    # print('Suma: {}'.format(suma))
+    return suma
+
 
 if __name__ == "__main__":
     
@@ -116,9 +135,53 @@ if __name__ == "__main__":
         {'profit': 87, 'weight': 89},   # 0
         {'profit': 72, 'weight': 82}    # 0
     ]
+
+    # Peso de inercia
+    w = 0.721
+    # Componentes cognitivo y social
+    c1 = 2
+    c2 = 2
+    # Inicialización de las matrices
     xArr = matBinAleat(len(arr))
     pArr = xArr
     vArr = matRealAleat(len(arr))
+
+    #Esta parte hay que agregarla a una función para poder retornar pArr[g] y fitness(pArr[g])
+    # Además, los comentarios de 'Repite' y 'Hasta que se alcance la condición de paro' están porque no implementé dicha condición (hay que hacerlo (debe ser una clase de ciclo o asi, creo))
+
+    # Repite
+    
+    # Recorre todas las partículas en arr y extrae el índice i
+    for i, prtc in enumerate(arr):
+        # Comparación de fitness en las dimensiones de X y P
+        if fitness(arr, xArr[i]) > fitness(arr, pArr[i]):
+            # Si el fitness en x es mayor que en p, cambia los elementos de X a P
+            for d, elem in enumerate(xArr):
+                pArr[i][d] = xArr[i][d]
+        
+        g = i # Almacena en g, el índice actual i
+        # Para cada partícula
+        for j, elem in enumerate(arr):
+            # Si el fitnes de Pj es mejor que el de Pg, almacena en g, el índice j
+            if fitness(pArr[j]) > fitness(pArr[g]):
+                g = j
+        # Números aleatoriamente distribuidos entre 0 y 1 y redondeados a dos decimales
+        r1 = round(random.uniform(0, 1), 2)
+        r2 = round(random.uniform(0, 1), 2)
+        # Para cada dimensión (creo que las dimensiones son los elementos de cada partícula, alch no me acuerdo)
+        for d, elem in enumerate(xArr):
+            vArr[i][d] = w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[g][d])
+            # Aquí no puse lo de Vid E (-Vmax, +Vmax)
+            # Cambiar Xid a 1 si sigmoide de Vid es mayor; si el random es mayor, Xid será 0
+            if random.uniform(0, 1) < sigmodie(vArr[i][d]): 
+                xArr[i][d] = 1 
+            else: 
+                xArr[i][d] = 0
+
+    # Hasta que se alcance la condición de paro
+
+    
+
 
     # for idx, art in enumerate(arr):
     #     print('\t{}. Costo: ${}; Peso: {} kg'.format(idx + 1, art['profit'], art['weight']))
