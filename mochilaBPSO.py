@@ -169,11 +169,11 @@ if __name__ == "__main__":
         r1 = round(random.uniform(0, 1), 2)
         r2 = round(random.uniform(0, 1), 2)
         # Para cada dimensión (creo que las dimensiones son los elementos de cada partícula, alch no me acuerdo)
-        for d, elem in enumerate(xArr):
-            vArr[i][d] = w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[g][d])
+        for d, elem in enumerate(pArr):
+            vArr[i][d] = w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[i][d])
             # Aquí no puse lo de Vid E (-Vmax, +Vmax)
             # Cambiar Xid a 1 si sigmoide de Vid es mayor; si el random es mayor, Xid será 0
-            if random.uniform(0, 1) < sigmodie(vArr[i][d]): 
+            if random.int(0, 1) < sigmodie(vArr[i][d]): 
                 xArr[i][d] = 1 
             else: 
                 xArr[i][d] = 0
