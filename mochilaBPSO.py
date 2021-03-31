@@ -135,8 +135,8 @@ if __name__ == "__main__":
             pesosPg = fitnessPesos(arr, pArr[g]) # Almacena el la relación de peso con  fitness(Pg)
             
             # Obtendrá el fitnes máximo de la iteración, así como el peso y partículas asociadas
-            if (fitnessPg >= fpgMax) and (165 >= pesosPg):
-                fpgMax = fitnessPg
+            if (fitnessPg >= fitnessPgMax) and (165 >= pesosPg):
+                fitnessPgMax = fitnessPg
                 fpgWeightMax = pesosPg
 
                 maximos = {
