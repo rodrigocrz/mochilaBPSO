@@ -1,5 +1,4 @@
 import random
-import os
 import math
     
 # Genera una matriz cuadrada (según el orden) con valores binarios
@@ -26,7 +25,7 @@ def matRealAleat(orden):
 
 # Obtiene la imagen de la función sigmoide evaluada en un punto específico
 def sigmoide(vid):
-    return 1 / (1 + math.exp(-vid))
+    return round(1 / (1 + math.exp(-vid)), 2)
 
 # Sumatoria del producto de la ganancia de cada item del mapa arr por el elemento 
 # correspondiente a la partícula de X o P
@@ -46,9 +45,9 @@ def fitness(arr, prtc):
 
 if __name__ == "__main__":
     
-    print('Funcionamiento\n  Obtiene la mayor ganancia de artículos para llevar en una mochila dada una capacidad máxima, al evaluar una serie de opciones aleatorias.\n')
-    print('Selección\n  La selección de los artículos está definida por la mejor ganancia obtenida al llevar artículos por completo en la mochila.\n')
-    print('Datos por defecto:')
+    # print('Funcionamiento\n  Obtiene la mayor ganancia de artículos para llevar en una mochila dada una capacidad máxima, al evaluar una serie de opciones aleatorias.\n')
+    # print('Selección\n  La selección de los artículos está definida por la mejor ganancia obtenida al llevar artículos por completo en la mochila.\n')
+    # print('Datos por defecto:')
 
     # Datos predeterminados cargados en una lista (resultados esperados del BPSO)
     # DATASET: P01 is a set of 10 weights and profits for a knapsack
@@ -86,26 +85,31 @@ if __name__ == "__main__":
     # Recorre todas las partículas en arr y extrae el índice i
     for i, prtc in enumerate(arr):
         # Comparación de fitness en las dimensiones de X y P
-        if fitness(arr, xArr[i]) > fitness(arr, pArr[i]):
+        xFitAct = fitness(arr, xArr[i]) # Fitness de la partícula actual en matriz x
+        pFitAct = fitness(arr, pArr[i]) # Fitness de la partícula actual en matriz p
+        if xFitAct > pFitAct:
             # Si el fitness en x es mayor que en p, cambia los elementos de X a P
             for d, elem in enumerate(xArr):
-                pArr[i][d] = xArr[i][d]
+                pArr[i][d] = xArr[i][d] # Actualización de la matriz p
 
         g = i # Almacena en g, el índice actual i (partícula líder actual)
         # Para cada partícula
         for j, elem in enumerate(arr):
-            # Si el fitnes de Pj es mejor que el de Pg, almacena en g, el índice j (partícula líder definitiva)
-            if fitness(arr, pArr[j]) > fitness(arr, pArr[g]):
+            # Si el fitness de Pj es mejor que el de Pg, almacena en g, el índice j (partícula líder definitiva)
+            pActFit = fitness(arr, pArr[j]) # Fitness de la partícula actual en matriz p
+            pFitLider = fitness(arr, pArr[g]) # Fitness de la partícula líder marcada en matriz p
+            if pActFit > pFitLider:
                 g = j
         # Números aleatoriamente distribuidos uniformemente entre 0 y 1 y redondeados a dos decimales
         r1 = round(random.uniform(0, 1), 2)
         r2 = round(random.uniform(0, 1), 2)
         # Para cada dimensión
         for d, elem in enumerate(xArr):
-            vArr[i][d] = w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[i][d])
-            # Aquí no puse lo de Vid E (-Vmax, +Vmax)
+            vArr[i][d] = round(w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[i][d]), 2)
             # Cambiar Xid a 1 si sigmoide de Vid es mayor; si el random es mayor, Xid será 0
-            if round(random.uniform(0, 1), 2) < sigmoide(vArr[i][d]): 
+            xRandom = round(random.uniform(0, 1), 2)
+            xSigmoide = sigmoide(vArr[i][d])
+            if xRandom < xSigmoide: 
                 xArr[i][d] = 1 
             else: 
                 xArr[i][d] = 0
