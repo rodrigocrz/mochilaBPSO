@@ -50,6 +50,7 @@ def fitnessPesos(arr, prtc):
     # print('SUM: {}'.format(suma))
     return suma
 
+    
 if __name__ == "__main__":
     
     # print('Funcionamiento\n  Obtiene la mayor ganancia de artículos para llevar en una mochila dada una capacidad máxima, al evaluar una serie de opciones aleatorias.\n')
@@ -73,6 +74,8 @@ if __name__ == "__main__":
         {'profit': 72, 'weight': 82}    # 0
     ]
 
+    # Capacidad de la mochila
+    maxWeight = 165
     # Peso de inercia
     w = 0.721
     # Componentes cognitivo y social
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     
     while repetir:
         contador += 1
-    # Recorre todas las partículas en arr y extrae el índice i
+        # Recorre todas las partículas en arr y extrae el índice i
         for i, prtc in enumerate(xArr):
             # Comparación de fitness en las dimensiones de X y P
             xFitAct = fitness(arr, xArr[i]) # Fitness de la partícula actual en matriz x
@@ -135,20 +138,16 @@ if __name__ == "__main__":
             pesosPg = fitnessPesos(arr, pArr[g]) # Almacena el la relación de peso con  fitness(Pg)
             
             # Obtendrá el fitnes máximo de la iteración, así como el peso y partículas asociadas
-            if (fitnessPg >= fitnessPgMax) and (165 >= pesosPg):
+            if (fitnessPg >= fitnessPgMax) and (maxWeight >= pesosPg):
                 fitnessPgMax = fitnessPg
-                fpgWeightMax = pesosPg
-
                 maximos = {
-                    'peso'        : fitnessPg,
-                    'ganancia'    : pesosPg, 
+                    'ganancia'    : fitnessPg,
+                    'peso'        : pesosPg, 
                     'particula'   : pArr[g],
+                    'velocidades' : vArr[g],
                     'repeticiones': contador
                 }
-                # Si en la iteración obtuvo el mismo resultado que en la iteración que proporcionó el máximo peso, aumenta el contador. En caso contrario, el contador se mantendrá en 0
-                if pesosPg == fpgWeightMax:
-                    cntMax += 1
-                    
+                cntMax += 1
             if cntMax > len(arr):
                 repetir = False
 
