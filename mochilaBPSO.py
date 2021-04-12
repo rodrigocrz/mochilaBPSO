@@ -33,7 +33,7 @@ def sigmoide(vid):
 def fitness(arr, prtc):
     suma = 0
     for idx, selec in enumerate(prtc): # selec es un número binario de la partícula
-        suma += selec * arr[idx]['profit']
+        suma += selec * arr[idx]['ganancia']
     #     print (''' 
     #         Selec: {}
     #         Profit: {}
@@ -46,13 +46,13 @@ def fitnessPesos(arr, prtc):
     suma = 0
     for idx, selec in enumerate(prtc): # selec es un número binario de la partícula
         # print('{} * {} = {}'.format(selec, arr[idx]['weight'], selec * arr[idx]['weight']))
-        suma += selec * arr[idx]['weight']
+        suma += selec * arr[idx]['peso']
     # print('SUM: {}'.format(suma))
     return suma
 
     
 if __name__ == "__main__":
-    
+
     # print('Funcionamiento\n  Obtiene la mayor ganancia de artículos para llevar en una mochila dada una capacidad máxima, al evaluar una serie de opciones aleatorias.\n')
     # print('Selección\n  La selección de los artículos está definida por la mejor ganancia obtenida al llevar artículos por completo en la mochila.\n')
     # print('Datos por defecto:')
@@ -62,16 +62,16 @@ if __name__ == "__main__":
     # of capacity 165.
     # 1 1 1 1 0 1 0 0 0 0 optimal selection of weights   
     arr = [
-        {'profit': 92, 'weight': 23},   # 1
-        {'profit': 57, 'weight': 31},   # 1
-        {'profit': 49, 'weight': 29},   # 1
-        {'profit': 68, 'weight': 44},   # 1
-        {'profit': 60, 'weight': 53},   # 0
-        {'profit': 43, 'weight': 38},   # 1
-        {'profit': 67, 'weight': 63},   # 0
-        {'profit': 84, 'weight': 85},   # 0
-        {'profit': 87, 'weight': 89},   # 0
-        {'profit': 72, 'weight': 82}    # 0
+        {'ganancia': 92, 'peso': 23},   # 1
+        {'ganancia': 57, 'peso': 31},   # 1
+        {'ganancia': 49, 'peso': 29},   # 1
+        {'ganancia': 68, 'peso': 44},   # 1
+        {'ganancia': 60, 'peso': 53},   # 0
+        {'ganancia': 43, 'peso': 38},   # 1
+        {'ganancia': 67, 'peso': 63},   # 0
+        {'ganancia': 84, 'peso': 85},   # 0
+        {'ganancia': 87, 'peso': 89},   # 0
+        {'ganancia': 72, 'peso': 82}    # 0
     ]
 
     # Capacidad de la mochila
@@ -118,11 +118,13 @@ if __name__ == "__main__":
                 pFitLider = fitness(arr, pArr[g]) # Fitness de la partícula líder marcada en matriz p
                 if pActFit > pFitLider:
                     g = j
-            # Números aleatoriamente distribuidos uniformemente entre 0 y 1 y redondeados a dos decimales
-            r1 = round(random.uniform(0, 1), 2)
-            r2 = round(random.uniform(0, 1), 2)
+            
             # Para cada dimensión
             for d, elem in enumerate(xArr):
+                # Números aleatoriamente distribuidos uniformemente entre 0 y 1 y redondeados a dos decimales
+                r1 = round(random.uniform(0, 1), 2)
+                r2 = round(random.uniform(0, 1), 2)
+                # Cálculo de velocidad
                 vArr[i][d] = round(w * vArr[i][d] + c1 * r1 * (pArr[i][d] - xArr[i][d]) + c2 * r2 * (pArr[g][d] - xArr[i][d]), 2)
                 # Cambiar Xid a 1 si sigmoide de Vid es mayor; si el random es mayor, Xid será 0
                 xRandom = round(random.uniform(0, 1), 2)
@@ -147,6 +149,7 @@ if __name__ == "__main__":
                     'velocidades' : vArr[g],
                     'repeticiones': contador
                 }
+
                 cntMax += 1
             if cntMax > len(arr):
                 repetir = False
