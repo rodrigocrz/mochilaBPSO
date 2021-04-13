@@ -1,5 +1,24 @@
 import random
 import math
+
+#Ingreso de datos por parte del usuario
+def enteries():
+    valid = 's'
+    arr = []
+    # Cycle that stops until the user decides to stop entering data of the articles to be evaluated in the algorithm
+    print('\nIngrese los datos de los artículos...')
+    while True:
+        ganancia  = int(input('\tIngrese ganancia: '))
+        peso = int(input('\tIngrese peso: '))
+        arr.append({'ganancia': ganancia, 'peso': peso})
+
+        valid = input('Elemento agregado, ¿Desea agregar otro? (s/n)')
+
+        while valid != 's' and valid != 'n' :
+            valid = input('Entrada incorrecta, ¿Desea agregar otro? (s/n) ')
+        if valid == 'n': break
+    # Returns the list with the new articles data
+    return arr
     
 # Genera una matriz cuadrada (según el orden) con valores binarios
 # aleatorios.
@@ -8,7 +27,6 @@ def matBinAleat(orden):
     for i in range (0, orden):
         for j in range (0, orden):
             matriz[i][j] = random.randint(0, 1)
-    # print(matriz)
     return matriz
 
 # Genera una matriz cuadrada (según el orden) con valores reales en un
@@ -19,7 +37,6 @@ def matRealAleat(orden):
         for j in range (0, orden):
             # Números aleatoriamente distribuidos uniformemente entre -4 y 4 y redondeados a dos decimales
             matriz[i][j] = round(random.uniform(-4, 4), 2)
-    # print(matriz)
     return matriz
 
 
@@ -34,48 +51,73 @@ def fitness(arr, prtc):
     suma = 0
     for idx, selec in enumerate(prtc): # selec es un número binario de la partícula
         suma += selec * arr[idx]['ganancia']
-    #     print (''' 
-    #         Selec: {}
-    #         Profit: {}
-    #         Yes? {}
-    #     '''.format(selec, arr[idx]['profit'], 'yes' if selec == 1 else 'no'))
-    # print('Suma: {}'.format(suma))
     return suma
 # Devuelve la relación de pesos respecto al fitness. Lo mismo que el fitness, pero con pesos
 def fitnessPesos(arr, prtc):
     suma = 0
-    for idx, selec in enumerate(prtc): # selec es un número binario de la partícula
-        # print('{} * {} = {}'.format(selec, arr[idx]['weight'], selec * arr[idx]['weight']))
+    for idx, selec in enumerate(prtc):
         suma += selec * arr[idx]['peso']
-    # print('SUM: {}'.format(suma))
     return suma
 
+def imprimeDatos(diccio):
+    cadena = ''
+    for idx, part in enumerate(diccio): 
+        cadena += ' {}. Ganancia: {}; Peso: {}\n'.format(idx + 1, part['ganancia'], part['peso'])
+    print(cadena)
+        
+
+def imprimeEntre(datos):
+    cadena = 'Datos finales: '
+    for elem in datos: cadena += str(elem) + ' '
+    print(cadena + '\n')
     
-if __name__ == "__main__":
 
-    # print('Funcionamiento\n  Obtiene la mayor ganancia de artículos para llevar en una mochila dada una capacidad máxima, al evaluar una serie de opciones aleatorias.\n')
-    # print('Selección\n  La selección de los artículos está definida por la mejor ganancia obtenida al llevar artículos por completo en la mochila.\n')
-    # print('Datos por defecto:')
-
+    
+def BPSO():
+    iteraciones = 100000
     # Datos predeterminados cargados en una lista (resultados esperados del BPSO)
-    # DATASET: P01 is a set of 10 weights and profits for a knapsack
-    # of capacity 165.
-    # 1 1 1 1 0 1 0 0 0 0 optimal selection of weights   
+    # DATASET: P02 is a set of 5 weights and profits for a knapsack of capacity 26.
+    # 0, 1, 1, 1, 0 optimal selection of weights   
     arr = [
-        {'ganancia': 92, 'peso': 23},   # 1
-        {'ganancia': 57, 'peso': 31},   # 1
-        {'ganancia': 49, 'peso': 29},   # 1
-        {'ganancia': 68, 'peso': 44},   # 1
-        {'ganancia': 60, 'peso': 53},   # 0
-        {'ganancia': 43, 'peso': 38},   # 1
-        {'ganancia': 67, 'peso': 63},   # 0
-        {'ganancia': 84, 'peso': 85},   # 0
-        {'ganancia': 87, 'peso': 89},   # 0
-        {'ganancia': 72, 'peso': 82}    # 0
+        {'ganancia': 24, 'peso': 12},   # 0
+        {'ganancia': 13, 'peso':  7},   # 1
+        {'ganancia': 23, 'peso': 11},   # 1
+        {'ganancia': 15, 'peso':  8},   # 1
+        {'ganancia': 16, 'peso':  9}    # 0
     ]
+    datosEntre = [0, 1, 1, 1, 0] # Datos de entrenamiento
+    
+    maxWeight = 26 # Capacidad de la mochila
+    print('\n Peso por defecto para estos datos: {}'.format(maxWeight))
 
-    # Capacidad de la mochila
-    maxWeight = 165
+    imprimeDatos(arr)
+    imprimeEntre(datosEntre)
+
+    # Preguntamos al usuario si desea usar los datos por defecto
+    manual = False if input('\n¿Usar datos predeterminados? (s/n) ') == 's' else True
+    if  manual:
+        arr  = enteries()
+        # Capacidad de la mochila
+        maxWeight = int(input('\nIngrese peso máximo de la mochila: '))
+
+    # Preguntamos si desea usar los datos de entrenamiento(salida)
+    entrenar = bool(True if input('¿Usar datos de salida (entrenamiento)?(s/n) ') == 's' else False)
+
+    if entrenar and manual:
+        datosEntre =[]
+        for idx, num in enumerate(range(len(arr))):
+            selec = int(input('Ingrese dato (0/1) de selección del elemento {}: '.format(idx + 1)))
+            datosEntre.append(selec)
+    elif not entrenar:
+        iteraciones = int(input('Número máximo de iteraciones: '))
+
+    if manual: 
+        print('NUEVOS DATOS')
+        imprimeDatos(arr)
+        imprimeEntre(datosEntre)
+
+
+    maximos = { 'ganancia': None, 'peso': None, 'particula': None, 'velocidades': None, 'repeticiones': None } # Inicialización del diccionario de máximos
     # Peso de inercia
     w = 0.721
     # Componentes cognitivo y social
@@ -92,13 +134,11 @@ if __name__ == "__main__":
 
     fitnessPgMax = 0 # Fitness máximo
     pesosPgMax   = 0 # Peso máximo en relación al fitness
-    cntMax       = 0 # Cuenta la cantidad de veces que se ha obtenido un máximo
+    coincidencias= 0 # Cuenta la cantidad de veces que se ha obtenido un máximo
     
     contador     = 0 # Cantidad de recorridos para cada partícula
-
-    repetir      = True # Bandera de repetición
     
-    while repetir:
+    while True:
         contador += 1
         # Recorre todas las partículas en arr y extrae el índice i
         for i, prtc in enumerate(xArr):
@@ -139,9 +179,12 @@ if __name__ == "__main__":
             fitnessPg = fitness(arr, pArr[g]) # Almacena el fitness(Pg)
             pesosPg = fitnessPesos(arr, pArr[g]) # Almacena el la relación de peso con  fitness(Pg)
             
+            
             # Obtendrá el fitnes máximo de la iteración, así como el peso y partículas asociadas
             if (fitnessPg >= fitnessPgMax) and (maxWeight >= pesosPg):
-                fitnessPgMax = fitnessPg
+                fitnessPgMax = fitnessPg #Define el fitness máximo para agregarlo al diccionario 'maximos'
+                coincidencias += 1 # Cuenta las veces que selecciona un máximo
+
                 maximos = {
                     'ganancia'    : fitnessPg,
                     'peso'        : pesosPg, 
@@ -150,13 +193,27 @@ if __name__ == "__main__":
                     'repeticiones': contador
                 }
 
-                cntMax += 1
-            if cntMax > len(arr):
-                repetir = False
+                # En caso que el usuario haya aceptado usar datos de entrenamiento
+                if entrenar and maximos['particula'] == datosEntre:
+                    return maximos
+                if coincidencias > len(arr) or iteraciones == contador:
+                    maximos['repeticiones'] = contador
+                    return maximos
 
-    print('peso: {}'.format(maximos['peso']))
-    print('ganancia: {}'.format(maximos['ganancia']))
-    print('partícula: {}'.format(maximos['particula']))
-    print('repeticiones: {}'.format(maximos['repeticiones']))
+        if iteraciones == contador:
+            maximos['repeticiones'] = contador
+            return maximos
+            
+    
 
     # Hasta que se alcance la condición de paro
+
+if __name__ == "__main__":
+    print('PSO Binario (BPSO).\n')
+    print('Funcionamiento\n  -> Obtiene el mayor coste dentro de una mochila dada una capacidad máxima.<-\n  -> En base al algoritmo de BPSO<- \n')
+    print('Datos por defecto:')
+    maximos = BPSO()
+    print('peso:         {}'.format(maximos['peso']))
+    print('ganancia:     {}'.format(maximos['ganancia']))
+    print('partícula:    {}'.format(maximos['particula']))
+    print('repeticiones: {}'.format(maximos['repeticiones']))
